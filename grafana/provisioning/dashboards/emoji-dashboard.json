@@ -304,7 +304,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "topk(10, rate(lmhd_emoji_twitter_ranking[1m]))",
+          "expr": "topk(10, rate(lmhd_emoji_twitter_ranking[5m]))",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "{{emoji}} {{name}}",
@@ -314,7 +314,7 @@
       "thresholds": [],
       "timeFrom": null,
       "timeShift": null,
-      "title": "Top 10 Most Used / 1m",
+      "title": "Top 10 Most Used / 5m",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -436,7 +436,7 @@
       }
     }
   ],
-  "refresh": "5s",
+  "refresh": "30s",
   "schemaVersion": 16,
   "style": "dark",
   "tags": [],
@@ -444,7 +444,7 @@
     "list": []
   },
   "time": {
-    "from": "now-5m",
+    "from": "now-1h",
     "to": "now"
   },
   "timepicker": {
