@@ -4,8 +4,8 @@
 
 Proof of Concept, using Emojitracker APIs:
 
-- [https://github.com/emojitracker/emojitrack-rest-api](Emojitracker REST API)
-- [https://github.com/emojitracker/emojitrack-streamer-spec](Emojitracker Streaming API)
+- [Emojitracker REST API](https://github.com/emojitracker/emojitrack-rest-api)
+- [Emojitracker Streaming API](https://github.com/emojitracker/emojitrack-streamer-spec)
 
 
 
