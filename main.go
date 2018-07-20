@@ -15,6 +15,8 @@
 package main
 
 import (
+	"bufio"
+	"encoding/json"
 	"flag"
 	"net/http"
 	"os"
@@ -27,69 +29,31 @@ import (
 
 // Global vars for metrics
 var (
-	streamViewers = prometheus.NewGaugeVec(
+	emojiScore = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
 			Namespace: "lmhd",
-			Subsystem: "twitch",
-			Name:      "stream_viewers",
-			Help:      "Number of viewers of a stream",
+			Subsystem: "emoji",
+			Name:      "twitter_ranking",
+			Help:      "Number of uses of this emoji on twitter",
 		},
 		[]string{
-			// Which twitch channel?
-			"channel",
+			// Which emoji?
+			"emoji",
+			"name",
+			"id",
 		},
 	)
 
-	streamFps = prometheus.NewGaugeVec(
-		prometheus.GaugeOpts{
-			Namespace: "lmhd",
-			Subsystem: "twitch",
-			Name:      "stream_average_fps",
-			Help:      "Average FPS of a stream",
-		},
-		[]string{
-			// Which twitch channel?
-			"channel",
-		},
-	)
-
-	channelFollowers = prometheus.NewGaugeVec(
-		prometheus.GaugeOpts{
-			Namespace: "lmhd",
-			Subsystem: "twitch",
-			Name:      "channel_followers",
-			Help:      "Number of followers of a channel",
-		},
-		[]string{
-			// Which twitch channel?
-			"channel",
-		},
-	)
-	channelViews = prometheus.NewGaugeVec(
-		prometheus.GaugeOpts{
-			Namespace: "lmhd",
-			Subsystem: "twitch",
-			Name:      "channel_views",
-			Help:      "Number of views of a channel",
-		},
-		[]string{
-			// Which twitch channel?
-			"channel",
-		},
-	)
+	// TODO: emoji ranking
 )
 
 var addr = flag.String("listen-address", ":8080", "The address to listen on for HTTP requests.")
 
 type Config struct {
-	LogLevel       string
-	KrakenClientID string
-	Channels       []string
+	LogLevel string
 }
 
 var cfg Config
-
-var kraken *KrakenClient
 
 func main() {
 	// Load env vars from .env file, if present
@@ -113,31 +77,11 @@ func main() {
 		log.SetLevel(log.ErrorLevel)
 	}
 
-	if len(os.Getenv("KRAKEN_CLIENT_ID")) == 0 {
-		log.Fatalf("KRAKEN_CLIENT_ID not set!")
-	}
-	cfg.KrakenClientID = os.Getenv("KRAKEN_CLIENT_ID")
-
-	if len(os.Getenv("TWITCH_CHANNELS")) == 0 {
-		log.Fatalf("TWITCH_CHANNELS not set!")
-	}
-	cfg.Channels = strings.Split(os.Getenv("TWITCH_CHANNELS"), ",")
-
-	//
-	// Twitch API Client
-	//
-
-	kraken = NewKrakenClient(cfg.KrakenClientID)
-
 	//
 	// Register Prometheus Metrics
 	//
 
-	prometheus.MustRegister(streamViewers)
-	prometheus.MustRegister(streamFps)
-
-	prometheus.MustRegister(channelFollowers)
-	prometheus.MustRegister(channelViews)
+	prometheus.MustRegister(emojiScore)
 
 	//
 	// Loops
@@ -157,63 +101,57 @@ func metricsHandler() {
 
 func metricsUpdate() {
 
-	krakenUsersResponse, err := kraken.Users(cfg.Channels)
+	// Init with rest API
+	rankings, err := Rankings()
 	if err != nil {
 		log.Fatalf("%s", err)
 	}
 
-	// map of IDs to Names
-	var channelIDs = make(map[string]string)
-	// slice of IDs
-	var channels []string
-
-	for _, user := range krakenUsersResponse.Users {
-		channelIDs[user.Name] = user.ID
-		channels = append(channels, user.ID)
+	for _, emoji := range rankings {
+		emojiScore.With(prometheus.Labels{
+			"emoji": emoji.Char,
+			"name":  emoji.Name,
+			"id":    emoji.ID,
+		}).Set(float64(emoji.Score))
 	}
 
-	log.Debugf("Channel IDs: %s", channelIDs)
+	// TODO: store an ID:Char lookup map
 
-	// Loop to update gauges
+	// TODO: move a bunch of this out into emoji.go, with helper functions and all that jazz
+	resp, _ := http.Get("https://stream.emojitracker.com/subscribe/eps")
+
+	reader := bufio.NewReader(resp.Body)
 	for {
-		// Keep track of which channels we've had updates for
-		// i.e. those which are live
-		channelsSeen := make(map[string]string)
-		// and those which are not
-		channelsUnseen := make(map[string]string)
-		for k, v := range channelIDs {
-			channelsUnseen[k] = v
+		line, _ := reader.ReadBytes('\n')
+		lineString := string(line)
+
+		// Lines look like
+		// data:{"1F449":1,"1F44D":1,"1F60F":1,"26F3":1}
+
+		if strings.HasPrefix(lineString, "data:") {
+
+			data := []byte(strings.TrimPrefix(lineString, "data:"))
+
+			jsonMap := make(map[string]int)
+			err = json.Unmarshal(data, &jsonMap)
+			if err != nil {
+				panic(err)
+			}
+
+			for key, val := range jsonMap {
+				for _, emoji := range rankings {
+					if emoji.ID == key {
+						emojiScore.With(prometheus.Labels{
+							"emoji": emoji.Char,
+							"name":  emoji.Name,
+							"id":    emoji.ID,
+						}).Add(float64(val))
+						log.Debugf("Char: %s (%s) : %d", key, emoji.Name, val)
+					}
+				}
+
+			}
 		}
 
-		log.Debugf("Querying %d channels", len(channelIDs))
-		krakenStreamsResponse, err := kraken.Streams(channels)
-		if err != nil {
-			log.Fatalf("%s", err)
-		}
-
-		log.Debugf("Updating metrics for %d live channels", len(krakenStreamsResponse.Streams))
-
-		for _, stream := range krakenStreamsResponse.Streams {
-			name := stream.Channel.Name
-
-			streamViewers.With(prometheus.Labels{"channel": name}).Set(float64(stream.Viewers))
-			streamFps.With(prometheus.Labels{"channel": name}).Set(float64(stream.AverageFps))
-			channelFollowers.With(prometheus.Labels{"channel": name}).Set(float64(stream.Channel.Followers))
-			channelViews.With(prometheus.Labels{"channel": name}).Set(float64(stream.Channel.Views))
-
-			channelsSeen[name] = channelsUnseen[name]
-			delete(channelsUnseen, name)
-		}
-
-		// For all channels we haven't seen, delete their live viewers
-		for name := range channelsUnseen {
-			log.Debugf("Deleting metrics for unseen channel %s", name)
-			streamViewers.Delete(prometheus.Labels{"channel": name})
-			streamFps.Delete(prometheus.Labels{"channel": name})
-
-			// TODO: query API to get these for non-live channels
-			channelFollowers.Delete(prometheus.Labels{"channel": name})
-			channelViews.Delete(prometheus.Labels{"channel": name})
-		}
 	}
 }

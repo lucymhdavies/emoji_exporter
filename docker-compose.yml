@@ -14,7 +14,7 @@ services:
 
   prometheus:
     build: ./prometheus
-    image: lmhd/twitch_exporter_prometheus
+    image: lmhd/twitter_emoji_exporter_prometheus
     volumes:
       - prometheus_data:/prometheus
     command:
@@ -28,11 +28,11 @@ services:
       - back-tier
     restart: always
 
-  twitch_exporter:
+  emoji_exporter:
     build:
       context:    .
       dockerfile: Dockerfile
-    image: lmhd/twitch_exporter
+    image: lmhd/twitter_emoji_exporter
     ports:
       - 8080:8080
     networks:
@@ -40,13 +40,11 @@ services:
     environment:
       # Values of these come from .env file
       LOG_LEVEL:
-      KRAKEN_CLIENT_ID:
-      TWITCH_CHANNELS:
     restart: always
 
   grafana:
     build: ./grafana
-    image: lmhd/twitch_exporter_grafana
+    image: lmhd/twitter_emoji_exporter_grafana
     depends_on:
       - prometheus
     ports:
