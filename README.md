@@ -39,6 +39,7 @@ The docker-compose file also comes with Grafana, with a pre-configured dashboard
 
 ![screenshot of Grafana dashboard](images/grafana.png)
 
+An interactive version of the above screenshot is available [here](https://snapshot.raintank.io/dashboard/snapshot/p6FNOHU7kdn6jqY4uidWYg56yfbcu8dT?orgId=2)
 
 
 ## If you want to support me making silly things
