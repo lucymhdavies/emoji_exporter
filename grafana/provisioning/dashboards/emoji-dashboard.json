@@ -15,7 +15,7 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "iteration": 1532261423269,
+  "iteration": 1532268206146,
   "links": [
     {
       "icon": "external link",
@@ -258,7 +258,7 @@
         "x": 12,
         "y": 6
       },
-      "id": 14,
+      "id": 17,
       "interval": null,
       "links": [],
       "mappingType": 1,
@@ -289,7 +289,7 @@
       ],
       "repeat": null,
       "repeatDirection": "h",
-      "repeatIteration": 1532261423269,
+      "repeatIteration": 1532268206146,
       "repeatPanelId": 6,
       "scopedVars": {
         "name": {
@@ -451,7 +451,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "rate(lmhd_emoji_twitter_ranking{name=~\"$name\"}[5m])",
+          "expr": "increase(lmhd_emoji_twitter_ranking{name=~\"$name\"}[5m])",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "{{emoji}} {{name}}",
@@ -566,5 +566,5 @@
   "timezone": "",
   "title": "Emoji Dashboard",
   "uid": "bqVEqqdiz",
-  "version": 1
+  "version": 2
 }
