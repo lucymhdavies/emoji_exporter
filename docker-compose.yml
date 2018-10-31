@@ -57,3 +57,17 @@ services:
       - back-tier
       - front-tier
     restart: always
+
+  nginx:
+    image: valian/docker-nginx-auto-ssl
+    depends_on:
+      - grafana
+    ports:
+      - 80:80
+      - 443:443
+    environment:
+      SITES: 'emojis.test.lmhd.me=grafana:3000'
+      ALLOWED_DOMAINS: emojis.test.lmhd.me
+    restart: on-failure
+    networks:
+      - front-tier
