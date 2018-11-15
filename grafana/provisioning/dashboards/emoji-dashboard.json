@@ -15,7 +15,7 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "iteration": 1532268206146,
+  "iteration": 1542270366850,
   "links": [
     {
       "icon": "external link",
@@ -289,7 +289,7 @@
       ],
       "repeat": null,
       "repeatDirection": "h",
-      "repeatIteration": 1532268206146,
+      "repeatIteration": 1542270366850,
       "repeatPanelId": 6,
       "scopedVars": {
         "name": {
@@ -336,7 +336,7 @@
       "datasource": "Prometheus",
       "fill": 1,
       "gridPos": {
-        "h": 16,
+        "h": 9,
         "w": 24,
         "x": 0,
         "y": 10
@@ -425,7 +425,7 @@
         "h": 11,
         "w": 24,
         "x": 0,
-        "y": 26
+        "y": 19
       },
       "id": 16,
       "legend": {
@@ -451,7 +451,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "increase(lmhd_emoji_twitter_ranking{name=~\"$name\"}[5m])",
+          "expr": "increase(lmhd_emoji_twitter_ranking{name=~\"$name\"}[60m])",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "{{emoji}} {{name}}",
@@ -461,7 +461,7 @@
       "thresholds": [],
       "timeFrom": null,
       "timeShift": null,
-      "title": "Usage / 10m",
+      "title": "Usage / 60m",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -535,7 +535,7 @@
     ]
   },
   "time": {
-    "from": "now-3h",
+    "from": "2018-11-15T08:24:26.485Z",
     "to": "now"
   },
   "timepicker": {
@@ -566,5 +566,5 @@
   "timezone": "",
   "title": "Emoji Dashboard",
   "uid": "bqVEqqdiz",
-  "version": 2
+  "version": 1
 }
