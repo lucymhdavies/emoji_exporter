@@ -15,7 +15,7 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "iteration": 1542270366850,
+  "iteration": 1542453934775,
   "links": [
     {
       "icon": "external link",
@@ -289,7 +289,7 @@
       ],
       "repeat": null,
       "repeatDirection": "h",
-      "repeatIteration": 1542270366850,
+      "repeatIteration": 1542453934775,
       "repeatPanelId": 6,
       "scopedVars": {
         "name": {
@@ -406,6 +406,90 @@
           "logBase": 1,
           "max": null,
           "min": null,
+          "show": false
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Prometheus",
+      "fill": 1,
+      "gridPos": {
+        "h": 9,
+        "w": 24,
+        "x": 0,
+        "y": 19
+      },
+      "id": 19,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "links": [],
+      "nullPointMode": "null",
+      "percentage": false,
+      "pointradius": 5,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "lmhd_emoji_twitter_ranking{name=\"AERIAL TRAMWAY\"} - ignoring(name,emoji, id) lmhd_emoji_twitter_ranking{name=\"INPUT SYMBOL FOR LATIN CAPITAL LETTERS\"}",
+          "format": "time_series",
+          "intervalFactor": 1,
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Aerial Tramway - Input Symbol for Latin Capital Letters",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "transparent": true,
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
           "show": true
         }
       ],
@@ -425,7 +509,7 @@
         "h": 11,
         "w": 24,
         "x": 0,
-        "y": 19
+        "y": 28
       },
       "id": 16,
       "legend": {
@@ -535,7 +619,7 @@
     ]
   },
   "time": {
-    "from": "2018-11-15T08:24:26.485Z",
+    "from": "now-24h",
     "to": "now"
   },
   "timepicker": {
@@ -566,5 +650,5 @@
   "timezone": "",
   "title": "Emoji Dashboard",
   "uid": "bqVEqqdiz",
-  "version": 1
+  "version": 2
 }
