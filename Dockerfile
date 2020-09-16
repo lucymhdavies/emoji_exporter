@@ -7,7 +7,7 @@
 #    docker build -f examples/$name/Dockerfile -t prometheus/golang-example-$name .
 
 # Builder image, where we build the example.
-FROM golang:1.10.0 AS builder
+FROM golang:1.15 AS builder
 WORKDIR /go/src/github.com/lucymhdavies/emoji_exporter
 ADD . .
 RUN go get -d

@@ -25,6 +25,7 @@ import (
 	log "github.com/Sirupsen/logrus"
 	"github.com/alexsasharegan/dotenv"
 	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 // Global vars for metrics
@@ -95,7 +96,7 @@ func main() {
 func metricsHandler() {
 
 	flag.Parse()
-	http.Handle("/metrics", prometheus.Handler())
+	http.Handle("/metrics", promhttp.Handler())
 	log.Fatal(http.ListenAndServe(*addr, nil))
 }
 
